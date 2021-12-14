@@ -6,15 +6,15 @@ import userEvent from '@testing-library/user-event';
 import Show from './../Show';
 
 const show = {
-    image: null,
-    name: "",
+    name: "show",
+    summary: "summary",
     seasons: [
         {id: 0, name: 'Season 1', episodes: []},
         {id: 1, name: 'Season 2', episodes: []},
         {id: 2, name: 'Season 3', episodes: []},
-        {id: 3, name: 'Season 4', episodes: []}
+        {id: 3, name: 'Season 4', episodes: []},
     ],
-    summary: ""
+    
 }
 
 test('renders without errors', ()=>{
@@ -39,9 +39,24 @@ test('renders same number of options seasons are passed in', ()=>{
     expect(seasons).toHaveLength(4)
 });
 
-test('handleSelect is called when an season is selected', () => {});
+test('handleSelect is called when an season is selected', () => {
+    const handleSelect = jest.fn();
+    render(<Show show={show} selectedSeason={"none"} handleSelect={handleSelect}/>);
+    const select = screen.getByLabelText(/select a season/i)
+    userEvent.selectOptions(select, ['1'])
 
-test('component renders when no seasons are selected and when rerenders with a season passed in', () => {});
+    expect(handleSelect).toBeCalled()
+
+});
+
+test('component renders when no seasons are selected and when rerenders with a season passed in', () => {
+    const { rerender } = render(<Show show={show} selectedSeason={"none"} />);
+    let episodes = screen.queryByTestId('episodes-container');
+    expect(episodes).not.toBeInTheDocument();
+
+    rerender(<Show show={show} selectedSeason={1} />);
+    expect(episodes).toBeInTheDocument();
+});
 
 // * [X] Build an example data structure that contains the show data in the correct format. A show should contain a name, a summary and an array of seasons, each with a id, name and an (empty) list of episodes within them. Use console.logs within the client code if you need to to verify the structure of show data.
 // * [X] Test that the Show component renders when your test data is passed in through show prop and "none" is passed in through selectedSeason prop.
